@@ -1,0 +1,74 @@
+			  public void loadDepends(Boolean checked) {
+				if (checked.booleanValue())
+					getLogger().log(Level.INFO, "An error has occured, we will now check all soft dependancies again");
+				getInstance().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)getInstance(), new Runnable() {
+			          public void run() {
+			              Main.this.getLogger().log(Level.INFO, "Attempting to register Infinite Chest dependancies.");
+			              if (Main.this.getServer().getPluginManager().isPluginEnabled("SuperBoosters")) {
+			                Main.this.getLogger().log(Level.INFO, "SuperBoosters Hook has been enabled.");
+			                Main.hooks.put("SuperBoosters", Boolean.valueOf(true));
+			              } else {
+			                Main.this.getLogger().log(Level.INFO, "SuperBoosters Hook has been disabled.");
+			                Main.hooks.put("SuperBoosters", Boolean.valueOf(false));
+			              } 
+			              if (Main.this.getServer().getPluginManager().isPluginEnabled("HolographicDisplays")) {
+			                Main.this.getLogger().log(Level.INFO, "HolographicDisplays Hook has been enabled.");
+			                Main.hooks.put("HolographicDisplays", Boolean.valueOf(true));
+			              } else {
+			                Main.this.getLogger().log(Level.INFO, "HolographicDisplays Hook has been disabled.");
+			                Main.hooks.put("HolographicDisplays", Boolean.valueOf(false));
+			              } 
+			              if (Main.this.getServer().getPluginManager().isPluginEnabled("ShopGUIPlus")) {
+			                Main.this.getLogger().log(Level.INFO, "ShopGUIPlus Hook has been enabled.");
+			                Main.hooks.put("ShopGUIPlus", Boolean.valueOf(true));
+			              } else {
+			                Main.this.getLogger().log(Level.INFO, "ShopGUIPlus Hook has been disabled.");
+			                Main.hooks.put("ShopGUIPlus", Boolean.valueOf(false));
+			              } 
+			              if (Main.this.getServer().getPluginManager().isPluginEnabled("WildStacker")) {
+			                Main.this.getLogger().log(Level.INFO, "WildStacker Hook has been enabled.");
+			                Main.hooks.put("WildStacker", Boolean.valueOf(true));
+			              } else {
+			                Main.this.getLogger().log(Level.INFO, "WildStacker hook has been disabled.");
+			                Main.hooks.put("WildStacker", Boolean.valueOf(false));
+			              } 
+			              try {
+			                Main.ChestUtils.loadChests();
+			                Main.this.console.sendMessage("§8> §eWe have loaded §7" + Main.ChestUtils.totalChests() + "&e iChests data");
+			              } catch (Exception e) {
+			                e.printStackTrace();
+			                Main.errors.put("Chests", Boolean.valueOf(true));
+			                Main.this.console.sendMessage(" §cAn error occured whilst loading the iChests.");
+			              } 
+			              Main.this.startHologramUpdates();
+			            }
+				}100L); error is here /////******///////
+		}
+    			public void startHologramUpdates() {
+			    Bukkit.getScheduler().scheduleSyncRepeatingTask((Plugin)this, new Runnable() {
+			          public void run() {
+			            if (Bukkit.getOnlinePlayers().size() > 0) {
+			              if (!Main.hooks.containsKey("LocationsLoaded") || !((Boolean)Main.hooks.get("LocationsLoaded")).booleanValue())
+			                try {
+			                  Main.hooks.put("LocationsLoaded", Boolean.valueOf(true));
+			                  Main.LocationUtils.loadLocations();
+			                  Main.this.console.sendMessage(" have loaded the data.");
+			                } catch (Exception e) {
+			                  e.printStackTrace();
+			                  Main.errors.put("Locations", Boolean.valueOf(true));
+			                  Main.this.console.sendMessage(" error occured whilst loading the iChests locations.");
+			                  return;
+			                }  
+			              for (Location loc : Main.LocationUtils.chestLocations.keySet()) {
+			                if (!Main.LocationUtils.hologramLocations.containsKey(loc)) {
+			                  Hologram holo = Main.HologramHook.getChestHologram(((Player[])Bukkit.getOnlinePlayers().toArray((T[])new Player[Bukkit.getOnlinePlayers().size()]))[0], (String)Main.LocationUtils.chunkLocations.get(loc.getChunk()), loc, Main.FileManager.getChestConfig((String)Main.LocationUtils.chestLocations.get(loc)).getString("Settings.Owner-Name"));
+			                  Main.LocationUtils.hologramLocations.put(loc, holo);
+			                  Main.LocationUtils.chunkHologram.put(loc.getChunk(), holo);
+			                  continue;
+			                } 
+			                Main.HologramHook.updateHologram(Main.FileManager.getChestConfig((String)Main.LocationUtils.chunkLocations.get(loc.getChunk())).getString("Settings.Owner-Name"), ((Player[])Bukkit.getOnlinePlayers().toArray((T[])new Player[Bukkit.getOnlinePlayers().size()]))[0], (String)Main.LocationUtils.chunkLocations.get(loc.getChunk()), loc, (Hologram)Main.LocationUtils.hologramLocations.get(loc));
+			              } 
+			            } 
+			          }
+			        }0L, 30L); ERROR IS HERE////////////////
+			  }
